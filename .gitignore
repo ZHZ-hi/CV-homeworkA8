@@ -11,6 +11,8 @@ assets/diffusers_tiny_model/
 assets/tmp_*
 *.log
 streamlit*.log
+*.docx
+*.tmp
 ~$*
 ~WRL*.tmp
 .streamlit/secrets.toml
