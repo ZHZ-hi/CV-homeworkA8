@@ -1,0 +1,16 @@
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.env
+data/
+assets/hf_cache/
+assets/hf_cache_write_test/
+assets/hf_runtime_cache/
+assets/diffusers_tiny_model/
+assets/tmp_*
+*.log
+streamlit*.log
+~$*
+~WRL*.tmp
+.streamlit/secrets.toml
