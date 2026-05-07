@@ -25,6 +25,27 @@ class DiffusionParams:
     guidance_scale: float
 
 
+def _load_font(size: int, bold: bool = False):
+    names = [
+        "DejaVuSans-Bold.ttf" if bold else "DejaVuSans.ttf",
+        "Arial Bold.ttf" if bold else "arial.ttf",
+        "LiberationSans-Bold.ttf" if bold else "LiberationSans-Regular.ttf",
+    ]
+    for name in names:
+        try:
+            return ImageFont.truetype(name, size)
+        except Exception:
+            pass
+    try:
+        from matplotlib import font_manager
+
+        family = "DejaVu Sans:bold" if bold else "DejaVu Sans"
+        path = font_manager.findfont(family, fallback_to_default=True)
+        return ImageFont.truetype(path, size)
+    except Exception:
+        return ImageFont.load_default()
+
+
 def _fallback_image(params: DiffusionParams, size: int = 256) -> Image.Image:
     key = f"{params.prompt}|{params.negative_prompt}|{params.steps}|{params.seed}|{params.guidance_scale}"
     digest = hashlib.sha256(key.encode("utf-8")).digest()
@@ -37,12 +58,8 @@ def _fallback_image(params: DiffusionParams, size: int = 256) -> Image.Image:
     bg = np.clip(bg + paper_noise, 0, 1)
     img = Image.fromarray(np.uint8(bg * 255), mode="RGB").filter(ImageFilter.GaussianBlur(0.35))
     draw = ImageDraw.Draw(img)
-    try:
-        digit_font = ImageFont.truetype("arial.ttf", int(150 + min(params.guidance_scale, 12) * 3))
-        label_font = ImageFont.truetype("arial.ttf", 14)
-    except Exception:
-        digit_font = ImageFont.load_default()
-        label_font = ImageFont.load_default()
+    digit_font = _load_font(int(150 + min(params.guidance_scale, 12) * 3), bold=True)
+    label_font = _load_font(14)
 
     ink = tuple(int(v) for v in rng.integers(20, 90, 3))
     if "watercolor" in params.prompt.lower():
